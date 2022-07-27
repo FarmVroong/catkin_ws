@@ -20,6 +20,9 @@ catkin_package(
 catkin_install_python(PROGRAMS src/drive_car.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
+catkin_install_python(PROGRAMS src/initialize.py
+  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
 
