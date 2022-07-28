@@ -6,8 +6,8 @@ import RPi.GPIO as GPIO
 from geometry_msgs.msg import Twist
 import time
 
-global throttle_steering = 0.1
-global throttle_reer = 0.1
+throttle_steering = 0.1
+throttle_reer = 0.1
 
 def setupGPIO(p1, p2, p3):
     GPIO.setmode(GPIO.BOARD)
@@ -17,9 +17,10 @@ def setupGPIO(p1, p2, p3):
 
 
 def callback(msg):
-    rospy.loginfo("Received a /cmd_vel message!")
-    rospy.loginfo("Linear Components: [%f, %f, %f]"%(msg.linear.x, msg.linear.y, msg.linear.z))
-    rospy.loginfo("Angular Components: [%f, %f, %f]"%(msg.angular.x, msg.angular.y, msg.angular.z))
+    rate = rospy.Rate(1)
+    # rospy.loginfo("Received a /cmd_vel message!")
+    # rospy.loginfo("Linear Components: [%f, %f, %f]"%(msg.linear.x, msg.linear.y, msg.linear.z))
+    # rospy.loginfo("Angular Components: [%f, %f, %f]"%(msg.angular.x, msg.angular.y, msg.angular.z))
 
     ENB_steering = 40
     IN1_steering = 36
@@ -38,7 +39,7 @@ def callback(msg):
     setupGPIO(ENB_reerright, IN1_reerright, IN2_reerright)
 
 
-    if (msg.linear.x is 1.0 and msg.angular.z is 0.0): # straight
+    if (msg.linear.x < 1.1 and msg.linear.x > 0.9 and msg.angular.z > -0.1 and msg.angular.z < 0.1): # straight
         rospy.loginfo("straight")
         GPIO.output(ENA_reerleft, GPIO.HIGH)
         GPIO.output(IN1_reerleft, GPIO.HIGH)
@@ -53,7 +54,7 @@ def callback(msg):
         GPIO.output(ENB_steering, GPIO.HIGH)
         GPIO.output(IN1_steering, GPIO.HIGH)
         GPIO.output(IN2_steering, GPIO.LOW)
-        time.sleep(throttle_steering)
+        # time.sleep(throttle_steering)
 
         GPIO.output(ENA_reerleft, GPIO.HIGH)
         GPIO.output(IN1_reerleft, GPIO.HIGH)
@@ -64,7 +65,7 @@ def callback(msg):
         GPIO.output(IN2_reerright, GPIO.LOW)
         time.sleep(throttle_reer)
 
-    elif (msg.linear.x is 0.0 and msg.angular.z is 1.0): # left turn
+    elif (msg.linear.x < 0.1 and msg.linear.x > -0.1 and msg.angular.z > 0.9 and msg.angular.z < 1.1): # left turn
         rospy.loginfo("left turn")
         GPIO.output(ENB_steering, GPIO.HIGH)
         GPIO.output(IN1_steering, GPIO.HIGH)
@@ -77,7 +78,7 @@ def callback(msg):
         GPIO.output(ENB_steering, GPIO.HIGH)
         GPIO.output(IN1_steering, GPIO.LOW)
         GPIO.output(IN2_steering, GPIO.HIGH)
-        time.sleep(throttle_steering)
+        # time.sleep(throxttle_steering)
         
         GPIO.output(ENA_reerleft, GPIO.HIGH)
         GPIO.output(IN1_reerleft, GPIO.HIGH)
@@ -88,14 +89,14 @@ def callback(msg):
         GPIO.output(IN2_reerright, GPIO.LOW)
         time.sleep(throttle_reer)
 
-    elif (msg.linear.x is 0.0 and msg.angular.z is -1.0): # right turn
-        rospy.loginfo("left turn")
+    elif (msg.linear.x < 0.1 and msg.linear.x > -0.1 and msg.angular.z > -1.1 and msg.angular.z < -0.9): # right turn
+        rospy.loginfo("right turn")
         GPIO.output(ENB_steering, GPIO.HIGH)
         GPIO.output(IN1_steering, GPIO.LOW)
         GPIO.output(IN2_steering, GPIO.HIGH)
         time.sleep(throttle_steering)
 
-    if (msg.linear.x is -1.0 and msg.angular.z is 0.0): # straight
+    if (msg.linear.x < -0.9 and msg.linear.x > -1.1 and msg.angular.z > -0.1 and msg.angular.z < 0.1): # straight
         rospy.loginfo("straight")
         GPIO.output(ENA_reerleft, GPIO.HIGH)
         GPIO.output(IN1_reerleft, GPIO.LOW)
